@@ -12,12 +12,14 @@
     die("Verbindung fehlgeschlagen: " . $mysqli->connect_error);
   }
 
-  # ' OR 1=1 limit 1#
-  $sql = "SELECT * FROM users WHERE benutzername='$username' AND passwort='$password';";
-  $result = $mysqli->query($sql);
-  $anzahl_treffer = $result->num_rows;
+  $sql = "SELECT * FROM users WHERE benutzername= ? AND passwort= ?;";
+  $statement = $mysqli->prepare($sql);
+  $statement->bind_param('ss', $username, $password);
+  $statement->execute();
+
+  $statement->store_result();
   
-  if ($anzahl_treffer == 1) {
+  if ($statement->num_rows == 1) {
 	  header("location: home.php");
 	  session_start();
 	  $_SESSION["username"]=$username;
